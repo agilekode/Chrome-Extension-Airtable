@@ -156,7 +156,6 @@ router = APIRouter()
 async def airtable_webhook(request: Request):
     global cursor
 
-    # Webhook ping from Airtable
     ping = await request.json()
     print("Webhook ping received:", ping)
 
@@ -168,26 +167,26 @@ async def airtable_webhook(request: Request):
     resp = requests.get(url, headers=headers)
     data = resp.json()
 
-    # Update cursor for next fetch
-    cursor = data.get("cursor", cursor)
     payloads = data.get("payloads", [])
     if not payloads:
         print("⚠️ No payloads found.")
         return {"status": "no changes"}
 
-    # ✅ Only process the *latest* payload
-    latest_payload = payloads[-1]
+    # ✅ Process ALL payloads, not just the latest
+    for payload in payloads:
+        changed_tables = payload.get("changedTablesById", {})
+        for table_id, table_changes in changed_tables.items():
+            for record_change in table_changes.get("changedRecordsById", {}).values():
+                record_id = record_change.get("id")
+                fields = record_change.get("current", {}).get("cellValuesByFieldId", {})
+                print(f"Changed record in table {table_id}")
 
-    changed_tables = latest_payload.get("changedTablesById", {})
-    for table_id, table_changes in changed_tables.items():
-        for record_change in table_changes.get("changedRecordsById", {}).values():
-            record_id = record_change.get("id")
-            fields = record_change.get("current", {}).get("cellValuesByFieldId", {})
+                if check_and_embed_endorsement(fields):
+                    print(f"✅ PDFs embedded for record {record_id}")
+                else:
+                    print(f"ℹ️ No endorsement PDFs found for record {record_id}")
 
-            print(f"Changed record in table {table_id}")
-            if check_and_embed_endorsement(fields):
-                print(f"✅ PDFs embedded for record {record_id}")
-            else:
-                print(f"ℹ️ No endorsement PDFs found for record {record_id}")
+    # ✅ Update cursor to the latest AFTER processing
+    cursor = data.get("cursor", cursor)
 
     return {"status": "ok"}
