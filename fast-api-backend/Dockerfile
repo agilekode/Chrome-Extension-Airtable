@@ -1,5 +1,6 @@
 # Use slim Python image
 FROM python:3.11-slim
+ENV PYTHONUNBUFFERED=1
 
 # Set working directory
 WORKDIR /app
@@ -24,4 +25,6 @@ EXPOSE 8000
 
 # Run with uvicorn (no reload in production)
 # CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "main:app", "--workers", "4", "--bind", "0.0.0.0:8000", "--timeout", "60"]
+CMD ["gunicorn", "main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker",
+     "--bind", "0.0.0.0:8000",
+     "--capture-output", "--access-logfile", "-", "--error-logfile", "-", "--log-level", "info"]
