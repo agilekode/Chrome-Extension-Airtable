@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Jupyter
+*.ipynb_checkpoints
+
+# Logs
+*.log
+*.out
+*.err
+
+# FAISS / vector index
+state/faiss_index/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment / Config
+.env
+*.env
+config.pyc

@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+.venv/
+venv/
+.ipynb_checkpoints/
+code_backups/
+state/faiss_index/   # if you rebuild FAISS index dynamically, keep it outside
