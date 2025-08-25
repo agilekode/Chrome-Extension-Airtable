@@ -98,10 +98,21 @@ def process_pdf_attachment(attachment: dict) -> bool:
         global splitter
         if "splitter" not in globals():
             splitter = RecursiveCharacterTextSplitter(
-                chunk_size=1000,
-                chunk_overlap=150,
-                separators=["\n\n", "\n", ".", " ", ""]
-            )
+            chunk_size=1200,
+            chunk_overlap=150,
+            # Order matters: we try to split on headings and sections first
+            separators=[
+                "\n# ",       # Markdown headings
+                "\n## ",      
+                "\n### ",
+                "\n\n",       # paragraphs
+                "\n- ",       # bullet lists
+                "\n",
+                ". ",          # sentence boundary
+                " ",           # words
+                ""             # fallback to chars
+            ]
+        )
 
         # Chunk text
         chunks = splitter.split_text(pdf_text)
@@ -114,7 +125,7 @@ def process_pdf_attachment(attachment: dict) -> bool:
         # Embed chunks
         VECTOR_STORE.add_texts(
             chunks,
-            metadatas=[{"filename": pdf_filename}] * len(chunks)
+            metadatas=[{"filename": pdf_filename} for chunk in chunks]
         )
 
         store_manager.save()
@@ -124,7 +135,6 @@ def process_pdf_attachment(attachment: dict) -> bool:
     except Exception as e:
         print(f"❌ Error processing {pdf_filename}: {e}")
         return False
-
 
 def check_and_embed_endorsement(fields: dict) -> bool:
     """

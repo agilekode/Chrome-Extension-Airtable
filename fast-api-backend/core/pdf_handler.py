@@ -1,5 +1,6 @@
 from PyPDF2 import PdfReader
 import tempfile, os, requests
+import pymupdf4llm
 from config import AIRTABLE_API_KEY
 
 class PDFHandler:
@@ -13,13 +14,9 @@ class PDFHandler:
             tmp.write(resp.content)
             tmp_path = tmp.name
 
-        text = []
         try:
-            reader = PdfReader(tmp_path)
-            for page in reader.pages:
-                if (t := page.extract_text()):
-                    text.append(t)
+            # pymupdf4llm extracts directly to markdown text
+            markdown_text = pymupdf4llm.to_markdown(tmp_path)
+            return markdown_text
         finally:
             os.remove(tmp_path)
-
-        return "\n".join(text)

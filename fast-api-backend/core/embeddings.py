@@ -1,9 +1,11 @@
+import os
 from langchain_community.vectorstores import Pinecone
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from pinecone import Pinecone as PineconeClient ,ServerlessSpec
 from config import PINECONE_API_KEY, PINECONE_INDEX_NAME
 from langchain_pinecone import PineconeVectorStore
 from utils.similarity import VectorSearch
+from langchain_openai import OpenAIEmbeddings
 
 
 class VectorStoreManager:
@@ -46,7 +48,10 @@ class VectorStoreManager:
 
 
 # ---- Initialize once here ----
-embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+embeddings = OpenAIEmbeddings(
+    model="text-embedding-3-small",   # or "text-embedding-3-large"
+    api_key=os.getenv("OPENAI_API_KEY")  # assumes OPENAI_API_KEY is set in env
+)
 store_manager = VectorStoreManager(embeddings)
 store_manager.load()
 

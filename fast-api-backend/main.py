@@ -11,9 +11,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-
-
 # Routers
 app.include_router(ask.router)
 app.include_router(webhook.router)
