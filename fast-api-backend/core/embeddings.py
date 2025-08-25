@@ -56,4 +56,4 @@ store_manager = VectorStoreManager(embeddings)
 store_manager.load()
 
 VECTOR_STORE = store_manager.vector_store
-vector_search = VectorSearch(VECTOR_STORE)
+vector_search = VectorSearch(VECTOR_STORE,embeddings)

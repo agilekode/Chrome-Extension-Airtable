@@ -98,7 +98,7 @@ async def ask(request: QueryRequest, user_id: str):
     metadata = request.metadata
 
     # Get search results
-    top_docs = vector_search.search_by_metadata(metadata, query_text, k=20)
+    top_docs = vector_search.search_by_metadata(metadata, query_text, k=10)
 
     # Build context from documents
     context_text = "\n\n".join([
@@ -155,7 +155,7 @@ Never invent information outside of the given documents.
 3. If the answer is unclear or not covered by the documents, explicitly say:  
    *"This information is not provided in the available policy documents."*  
 4. Maintain clarity, structure, and accuracy in your explanations.  
-5. Keep answers concise but thorough.  
+5. Keep answers concise but thorough if user ask detail answer then detailed if not then shortly give fastly and make sure u have to decide on basis of user query .  
 
 ### Previous Conversation
 {{chat_history}}
